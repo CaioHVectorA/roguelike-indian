@@ -1,0 +1,4 @@
+- [ ] Implement Bow System
+- [ ] Design enemies
+- [ ] Implement knife system?
+- [ ] Design upgrade system
