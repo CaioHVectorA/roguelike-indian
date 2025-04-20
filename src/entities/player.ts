@@ -1,6 +1,7 @@
 import { KAPLAYCtx } from "kaplay";
 import { size } from "../components/size";
 import { moving } from "../components/moving";
+import { arrowUser } from "../components/arrow";
 
 export const PLAYER = {
   SIZE_X: 39,
@@ -23,6 +24,7 @@ export const playerFn = (k: KAPLAYCtx) => {
     size(PLAYER.SIZE_X, PLAYER.SIZE_Y, k),
     k.health(PLAYER.INITIAL_HEALTH, PLAYER.INITIAL_HEALTH),
     moving(k, false),
+    arrowUser(k),
     "player",
     "hero",
     "ally",
@@ -64,35 +66,7 @@ export const setupKeybindings = (
     // player.move(0, speed);
   });
   k.onButtonPress("shoot", () => {
-    const angle = Math.atan2(
-      k.mousePos().y - player.pos.y,
-      k.mousePos().x - player.pos.x
-    );
-    console.log(
-      angle,
-      Math.cos(angle),
-      Math.sin(angle),
-      angle * (180 / Math.PI)
-    );
-    k.add([
-      k.sprite("arrow"),
-      k.pos(
-        player.pos.x +
-          Math.cos(angle) * 32 -
-          6 *
-            (angle * (180 / Math.PI) > 90 || angle * (180 / Math.PI) < -90
-              ? -1
-              : 1),
-        player.pos.y +
-          Math.sin(angle) * 32 -
-          6 *
-            (angle * (180 / Math.PI) > 90 || angle * (180 / Math.PI) < -90
-              ? -1
-              : 1)
-      ),
-      k.scale(2),
-      k.rotate(angle * (180 / Math.PI)),
-    ]);
+    player.shoot();
   });
   //   k.onButtonPress("dash", async () => {
   //     if (player.getStamina() < 65) return;
