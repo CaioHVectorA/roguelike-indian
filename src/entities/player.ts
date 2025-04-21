@@ -70,7 +70,8 @@ export const setupKeybindings = (
   });
   k.onButtonRelease("shoot", () => {
     k.get("arrow").forEach((arrow) => {
-      if (arrow.enterState) arrow.enterState("shoot");
+      if (arrow.enterState && arrow.state == "prepare")
+        arrow.enterState("shoot");
     });
   });
   //   k.onButtonPress("dash", async () => {
