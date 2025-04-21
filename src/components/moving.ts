@@ -1,5 +1,12 @@
-import { KAPLAYCtx, Vec2 } from "kaplay";
-
+import { Comp, KAPLAYCtx, Vec2 } from "kaplay";
+export interface MoveComp extends Comp {
+  setMovimentation: (mov: Vec2) => void;
+  setHMovimentation: (h: number) => void;
+  setVMovimentation: (v: number) => void;
+  getMovimentation: () => Vec2;
+  stopMovimentInterval: (timeout: number) => void;
+  getPredictedPosition: (time: number) => Vec2;
+}
 export function moving(k: KAPLAYCtx, automatic = true) {
   let moviment: Vec2 = k.vec2(0, 0);
   return {
