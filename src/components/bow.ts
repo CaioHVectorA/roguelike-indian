@@ -1,12 +1,13 @@
 import { KAPLAYCtx } from "kaplay";
 import { Player } from "../entities/player";
+import { moving } from "./moving";
 
 export function arrowUser(k: KAPLAYCtx) {
   let cooldown = 0.3;
   let cooldownTimer = Infinity;
   let state = 1;
   return {
-    id: "arrow",
+    id: "bow",
     require: ["pos"],
     add() {},
     update() {
@@ -26,6 +27,7 @@ export function arrowUser(k: KAPLAYCtx) {
         k.scale(2),
         k.rotate(angle * (180 / Math.PI)),
         k.area(),
+        moving(k, true),
         k.center(),
         k.opacity(1),
         k.anchor("center"),
@@ -57,7 +59,12 @@ export function arrowUser(k: KAPLAYCtx) {
       });
       arrow.onStateEnter("shoot", () => {
         state = 1;
-        arrow.use(k.move(direction * (180 / Math.PI), distance ** 1.2 * 40));
+        // arrow.setMovimentation(
+        //   k.vec2(direction * (180 / Math.PI), distance ** 1.2 * 40)
+        // );
+        arrow.setHMovimentation(Math.cos(direction) * distance ** 1.2 * 40);
+        arrow.setVMovimentation(Math.sin(direction) * distance ** 1.2 * 40);
+        // arrow.use(k.move(direction * (180 / Math.PI), distance ** 1.2 * 40));
       });
       let life = 0;
 
@@ -69,7 +76,8 @@ export function arrowUser(k: KAPLAYCtx) {
       });
       arrow.onStateUpdate("idle", () => {
         life += k.dt() / Math.log(distance);
-        arrow.use(k.move(0, 0));
+        // arrow.use(k(0, 0));
+        arrow.setMovimentation(k.vec2(0, 0));
         arrow.opacity = 1 - life / 3;
         if (1 - life / 3 < 0 || isNaN(life)) {
           arrow.destroy();
