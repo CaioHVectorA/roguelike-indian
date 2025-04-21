@@ -1,7 +1,7 @@
 import { KAPLAYCtx } from "kaplay";
 import { size } from "../components/size";
 import { moving } from "../components/moving";
-import { arrowUser } from "../components/arrow";
+import { arrowUser } from "../components/bow";
 
 export const PLAYER = {
   SIZE_X: 39,
@@ -67,6 +67,11 @@ export const setupKeybindings = (
   });
   k.onButtonPress("shoot", () => {
     player.shoot();
+  });
+  k.onButtonRelease("shoot", () => {
+    k.get("arrow").forEach((arrow) => {
+      if (arrow.enterState) arrow.enterState("shoot");
+    });
   });
   //   k.onButtonPress("dash", async () => {
   //     if (player.getStamina() < 65) return;
