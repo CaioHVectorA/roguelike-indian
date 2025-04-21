@@ -15,10 +15,57 @@ import { logVector } from "../lib/log-vector";
 import { MoveComp } from "./moving";
 
 export function dodgeable(k: KAPLAYCtx) {
+  let arrowObj: GameObj<
+    | PosComp
+    | Vec2
+    | SpriteComp
+    | AreaComp
+    | AnchorComp
+    | ScaleComp
+    | RotateComp
+    | OpacityComp
+    | StateComp
+    | MoveComp
+  > | null = null;
   return {
     id: "dodgeable",
     require: ["moving"],
-    add() {},
+    add() {
+      this.onStateEnter("dodge", () => {
+        if (!arrowObj) return;
+        console.log("dodge");
+        const randomDirection = arrowObj.getMovimentation().angle();
+        // console.log({ randomDirection });
+        //   const randomDirection =
+        //     k.randi(0, 1) == 1 ? k.rand(80, 110) : k.rand(220, 270);
+        const speed = 400;
+        //   console.log({ randomDirection });
+        let direction = Math.random() > 0.5 ? 1 : -1;
+        if (this.pos.x + 200 > k.width()) {
+          direction = 1;
+        }
+        if (this.pos.x - 200 < 0) {
+          direction = -1;
+        }
+        if (this.pos.y + 200 < k.height()) {
+          direction = 1;
+        }
+        if (this.pos.y - 200 > 0) {
+          direction = -1;
+        }
+        console.log(direction);
+        this.setMovimentation(
+          k.vec2(
+            Math.cos(k.deg2rad(randomDirection + 90 * direction)) * speed,
+            Math.sin(k.deg2rad(randomDirection + 90 * direction)) * speed
+          )
+        );
+        k.wait(0.5, () => {
+          this.setMovimentation(0, 0);
+          this.enterState("idle");
+        });
+      });
+    },
     update() {
       k.get("arrow")
         .filter((t) => t.state == "shoot")
@@ -37,6 +84,7 @@ export function dodgeable(k: KAPLAYCtx) {
               | MoveComp
             >
           ) => {
+            arrowObj = arrow;
             // todo: make a way to get an predict for arrow and dodge
             if (this.state == "dodge") return;
             const movimentation = arrow.getMovimentation().len();
@@ -52,22 +100,7 @@ export function dodgeable(k: KAPLAYCtx) {
             }
             arrow.onCollide("enemy", () => {
               arrow.destroy();
-            });
-            this.onStateEnter("dodge", () => {
-              console.log("dodge");
-              const randomDirection = 140;
-              //   const randomDirection =
-              //     k.randi(0, 1) == 1 ? k.rand(80, 110) : k.rand(220, 270);
-              const speed = 400;
-              //   console.log({ randomDirection });
-              this.setMovimentation(
-                Math.cos(randomDirection) * speed,
-                Math.sin(randomDirection) * speed
-              );
-              k.wait(0.5, () => {
-                this.setMovimentation(0, 0);
-                this.enterState("idle");
-              });
+              arrow.enterState("idle");
             });
           }
         );
